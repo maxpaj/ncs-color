@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "ts-node src/ncs-color.ts",
+    "test": "ts-jest src/**/*.test.ts"
+  },
+  "dependencies": {
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "@types/jest": "^29.5.5"
+  }
+}
