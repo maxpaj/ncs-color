@@ -1,17 +1,19 @@
-type Saturation = {
-  s: number;
-  c: number;
+type Nuance = {
+  blackness: number;
+  chromaticness: number;
+  saturation: number;
+  whiteness: number;
+  lightness: number;
 };
 
 type Hue = {
-  r: number;
-  g: number;
-  b: number;
-  y: number;
+  red: number;
+  green: number;
+  blue: number;
+  yellow: number;
 };
 
-type NCS = Saturation & Hue;
-
+type NCS = { edition: string } & Nuance & Hue;
 type HueColor = keyof Hue;
 
 function getHueColor(
@@ -45,9 +47,9 @@ function getColor(color: string): HueColor {
   return color as HueColor;
 }
 
-export function ncsToHex(ncsString: string): NCS {
+export function parseNCS(ncsString: string): NCS {
   const regex =
-    /^(?:NCS)\s?(S?)\s?(\d{2})(\d{2})-(?:(N)|(?:(|Y|R|G|B)(\d{2})(Y|R|G|B)))$/g;
+    /^(?:NCS)\s?(S?)\s?(\d{2})(\d{2})-(?:(N)|(?:(Y|R|G|B)(\d{2})(Y|R|G|B)))$/g;
 
   const regexTest = regex.exec(ncsString);
 
@@ -64,13 +66,24 @@ export function ncsToHex(ncsString: string): NCS {
     getColor(regexTest[7])
   );
 
+  const blackness = parseInt(regexTest[2]);
+  const chromaticness = parseInt(regexTest[3]);
+
+  const whiteness = 100 - blackness - chromaticness;
+  const lightness = (100 - blackness) / 100;
+  const saturation = chromaticness / (whiteness + chromaticness);
+
   const ncs: NCS = {
-    s: parseInt(regexTest[2]),
-    c: parseInt(regexTest[3]),
-    r: 0,
-    b: 0,
-    y: 0,
-    g: 0,
+    edition: "",
+    blackness: blackness,
+    whiteness: whiteness,
+    lightness: lightness,
+    chromaticness: chromaticness,
+    saturation: saturation,
+    red: 0,
+    blue: 0,
+    yellow: 0,
+    green: 0,
     ...hueColor,
   };
 
